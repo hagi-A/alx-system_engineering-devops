@@ -1,22 +1,19 @@
 #!/usr/bin/env bash
-# list subdomains of a dns if it has
+# display information about subdomains.
 
-func () {
-  answer_section=$(dig $2.$1 | grep -A1 'ANSWER SECTION:')
-  dns_record=$(echo $answer_section | awk '{print $7}')
-  ip_adress=$(echo $answer_section | awk '{print $8}')
-  printf "The subdomain %s is a %s record and points to %s\n" "$2" "$dns_record" "$ip_adress"
-}
-
-if [ $# == 1 ]
+if [ $# -eq 2 ]
 then
-  for sub in www lb-01 web-01 web-02
-  do
-    func "$1" "$sub"
-  done
-elif [ $# == 2 ]
+    URL="$2.$1"
+    IP=$(dig "$URL" | grep -A1 'ANSWER SECTION:' | tail -1 | awk '{print $5}')
+    RECORDTYPE=$(dig "$URL" | grep -A1 'ANSWER SECTION:' | tail -1 | awk '{print $4}')
+    echo "The subdomain $2 is a $RECORDTYPE record and points to $IP"
+elif [ $# -eq 1 ]
 then
-  func "$1" "$2"
-else
-  exit
+    for DOMAIN in 'www' 'lb-01' 'web-01' 'web-02'
+    do
+        URL="$DOMAIN.$1"
+        IP=$(dig "$URL" | grep -A1 'ANSWER SECTION:' | tail -1 | awk '{print $5}')
+        RECORDTYPE=$(dig "$URL" | grep -A1 'ANSWER SECTION:' | tail -1 | awk '{print $4}')
+        echo "The subdomain $DOMAIN is a $RECORDTYPE record and points to $IP"
+    done
 fi

@@ -1,0 +1,4 @@
+Host *
+IdentityFile ~/.ssh/school
+PasswordAuthentication No
+PubkeyAuthentication yes
